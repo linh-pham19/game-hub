@@ -21,8 +21,8 @@ const useGenres = () => useQuery({
   //     .then(res => res.data),
   queryFn: apiClient.getAll,
       staleTime: 24 * 60 * 60 * 1000, // 24 hours
-      // initialData: genres // Use local data as initial data
-      initialData: { count: genres.length, results: genres } // Use local data as initial data
+      initialData: genres // Use local data as initial data
+      // initialData: { count: genres.length, results: genres } // Use local data as initial data
   
 })
 
