@@ -2,7 +2,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { GameQuery } from "../App";
 import { FetchResponse } from "../services/api-client";
 import { Genre } from "./useGenres";
-import apiClient from "../services/api-client";
+import APIClient from "../services/api-client";
 
 export interface Platform {
   id: number;
@@ -19,6 +19,7 @@ export interface Game {
   rating_top: number;
 }
 
+const apiClient = new APIClient<Game>("/games");
 
 // const useGames = (gameQuery: GameQuery) =>
 //   useData<Game>(
@@ -53,16 +54,25 @@ export interface Game {
 // THIS IS GOOD FOR INFINITE SCROLLING
 const useGames = (gameQuery: GameQuery) => useInfiniteQuery<FetchResponse<Game>,Error>({
 queryKey: ['games', gameQuery],
-queryFn: ({ pageParam = 1 }) =>
-  apiClient.get<FetchResponse<Game>>('/games', {
-    params: {
-      genres: gameQuery.genreId,
-      parent_platforms: gameQuery.platformId,
-      ordering: gameQuery.sortOrder,
-      search: gameQuery.searchText,
-      page: pageParam,
-    },
-  }).then(res => res.data),
+// queryFn: ({ pageParam = 1 }) =>
+//   apiClient.get<FetchResponse<Game>>('/games', {
+//     params: {
+//       genres: gameQuery.genreId,
+//       parent_platforms: gameQuery.platformId,
+//       ordering: gameQuery.sortOrder,
+//       search: gameQuery.searchText,
+//       page: pageParam,
+//     },
+//   }).then(res => res.data),
+queryFn: () => apiClient.getAll({
+  params: {
+    genres: gameQuery.genreId,
+    parent_platforms: gameQuery.platformId,
+    ordering: gameQuery.sortOrder,
+    search: gameQuery.searchText,
+  }
+}),
+  
   getNextPageParam: (lastPage, allPages) => {
     // If lastPage.next is a URL, increment page number
     // If lastPage.next is null, there are no more pages
