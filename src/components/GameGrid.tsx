@@ -6,6 +6,7 @@ import GameCard from "./GameCard";
 import GameCardContainer from "./GameCardContainer";
 import GameCardSkeleton from "./GameCardSkeleton";
 import { useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 interface Props {
   gameQuery: GameQuery;
@@ -26,12 +27,18 @@ const GameGrid = ({ gameQuery }: Props) => {
 
   return (
     <>
-      <SimpleGrid
-        columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
-        padding="10px"
-        spacing={6}
+      <InfiniteScroll
+        dataLength={data?.pages.flatMap((page) => page.results).length || 0}
+        next={fetchNextPage}
+        hasMore={!!hasNextPage}
+        loader={<GameCardSkeleton />}
       >
-        {/* {isLoading &&
+        <SimpleGrid
+          columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+          padding="10px"
+          spacing={6}
+        >
+          {/* {isLoading &&
           skeletons.map((skeleton) => (
             <GameCardContainer key={skeleton}>
               <GameCardSkeleton />
@@ -42,22 +49,23 @@ const GameGrid = ({ gameQuery }: Props) => {
             <GameCard game={game} />
           </GameCardContainer>
         ))} */}
-        {/* THIS IS FOR INFINITE SCROLLING */}
-        {isFetchingNextPage &&
-          skeletons.map((skeleton) => (
-            <GameCardContainer key={skeleton}>
-              <GameCardSkeleton />
-            </GameCardContainer>
-          ))}
-        {data?.pages.flatMap((page) =>
-          page.results.map((game, index) => (
-            <GameCardContainer key={game.id}>
-              <GameCard game={game} />
-            </GameCardContainer>
-          ))
-        )}
-      </SimpleGrid>
-
+          {/* THIS IS FOR INFINITE SCROLLING */}
+          {isFetchingNextPage &&
+            skeletons.map((skeleton) => (
+              <GameCardContainer key={skeleton}>
+                <GameCardSkeleton />
+              </GameCardContainer>
+            ))}
+          {data?.pages.flatMap((page) =>
+            page.results.map((game, index) => (
+              <GameCardContainer key={game.id}>
+                <GameCard game={game} />
+              </GameCardContainer>
+            ))
+          )}
+        </SimpleGrid>
+      </InfiniteScroll>
+      {/* 
       {hasNextPage && (
         <button
           style={{
@@ -76,7 +84,7 @@ const GameGrid = ({ gameQuery }: Props) => {
         >
           {isFetchingNextPage ? "Loading..." : "Load More"}
         </button>
-      )}
+      )} */}
     </>
   );
 };
